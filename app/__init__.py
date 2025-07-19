@@ -1,0 +1,1 @@
+# TechPal - Educational AI Assistant for Children 
