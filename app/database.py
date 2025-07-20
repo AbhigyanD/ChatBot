@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from app.config import settings
 
 # Create database engine
@@ -12,9 +11,6 @@ engine = create_engine(
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create base class for models
-Base = declarative_base()
-
 def get_db():
     """Dependency to get database session"""
     db = SessionLocal()
@@ -25,5 +21,5 @@ def get_db():
 
 def create_tables():
     """Create all database tables"""
-    from app.models import User, Conversation, Message
+    from app.models import Base, User, Conversation, Message
     Base.metadata.create_all(bind=engine) 
