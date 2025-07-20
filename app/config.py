@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     default_llm_provider: str = "openai"  # "openai" or "anthropic"
     
     # Database Configuration
-    database_url: str = "sqlite:///./techpal.db"
+    database_url: str = "sqlite:///:memory:"  # Use in-memory database for testing
     
     # Security
     secret_key: str = "your-secret-key-change-in-production"
