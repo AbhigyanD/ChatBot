@@ -44,9 +44,12 @@ def create_conversation(db: Session, user_id: int, title: Optional[str] = None) 
     db.refresh(db_conversation)
     return db_conversation
 
-def get_conversation(db: Session, conversation_id: int) -> Optional[Conversation]:
-    """Get conversation by ID"""
-    return db.query(Conversation).filter(Conversation.id == conversation_id).first()
+def get_conversation(db: Session, conversation_id: int, user_id: Optional[int] = None) -> Optional[Conversation]:
+    """Get conversation by ID, optionally filtered by user_id for security"""
+    query = db.query(Conversation).filter(Conversation.id == conversation_id)
+    if user_id is not None:
+        query = query.filter(Conversation.user_id == user_id)
+    return query.first()
 
 def get_user_conversations(db: Session, user_id: int, limit: int = 10) -> List[Conversation]:
     """Get conversations for a user"""
@@ -70,6 +73,18 @@ def create_message(db: Session, conversation_id: int, content: str, role: str,
     db.commit()
     db.refresh(db_message)
     return db_message
+
+def add_message_to_conversation(db: Session, conversation_id: int, role: str, content: str) -> Message:
+    """Add a message to a conversation and update conversation timestamp"""
+    message = create_message(db, conversation_id, content, role)
+    
+    # Update conversation timestamp
+    conversation = get_conversation(db, conversation_id)
+    if conversation:
+        conversation.updated_at = datetime.utcnow()
+        db.commit()
+    
+    return message
 
 def get_conversation_messages(db: Session, conversation_id: int) -> List[Message]:
     """Get all messages for a conversation"""
